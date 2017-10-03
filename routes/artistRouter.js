@@ -18,7 +18,10 @@ router.route('/')
                 console.log('err: ' + err);
                 next(err);
             }
-            res.json(artists);
+            res.json({
+                total: artists.length,
+                data: artists
+            });
         });
     })
 

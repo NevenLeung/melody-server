@@ -19,7 +19,7 @@ db.once('open', function () {
 });
 
 const index = require('./routes/index');
-// const songRouter = require('./routes/songRouter');
+const songRouter = require('./routes/songRouter');
 const artistRouter = require('./routes/artistRouter');
 
 let app = express();
@@ -36,9 +36,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// to solve the cross-origin problem
+app.all('*', function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
+    res.header("Access-Control-Allow-Headers", "X-Requested-With");
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 app.use('/', index);
 app.use('/artists', artistRouter);
-// app.use('/songs', songRouter);
+app.use('/songs', songRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
