@@ -7,6 +7,9 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const cors = require('cors');
 
 const config = require('./config');
 
@@ -18,11 +21,25 @@ db.once('open', function () {
     console.log('Connected successfully to server');
 });
 
+const User = require('./models/users');
+
 const index = require('./routes/index');
 const songRouter = require('./routes/songRouter');
 const artistRouter = require('./routes/artistRouter');
+const userRouter = require('./routes/userRouter');
+
 
 let app = express();
+
+// to solve the cross-origin problem
+
+app.use(cors());
+
+// use passport to handle user authentication
+app.use(passport.initialize());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -36,18 +53,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// to solve the cross-origin problem
-app.all('*', function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header('Access-Control-Allow-Methods', 'PUT, GET, POST, DELETE, OPTIONS');
-    res.header("Access-Control-Allow-Headers", "X-Requested-With");
-    res.header('Access-Control-Allow-Headers', 'Content-Type');
-    next();
-});
-
 app.use('/', index);
-app.use('/artists', artistRouter);
-app.use('/songs', songRouter);
+app.use('/singer', artistRouter);
+app.use('/music', songRouter);
+app.use('/userCenter', userRouter);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
