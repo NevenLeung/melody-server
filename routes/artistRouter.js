@@ -3,16 +3,14 @@
  */
 
 const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 
 const Artists = require('../models/artists');
+const Verify = require('./verify');
 
 const router = express.Router();
-router.use(bodyParser.json());
 
 router.route('/')
-    .get((req, res, next) => {
+    .get(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
         Artists.find(req.query, (err, artists) => {
             if (err) {
                 console.log('err: ' + err);
@@ -25,7 +23,7 @@ router.route('/')
         });
     })
 
-    .post((req, res, next) => {
+    .post(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
         Artists.create(req.body, (err, artist) => {
             if (err) {
                 console.log('err: ' + err);
@@ -36,7 +34,7 @@ router.route('/')
         });
     })
 
-    .delete((req, res, next) => {
+    .delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
         Artists.remove({}, (err, resp) => {
             if (err) {
                 console.log('err: ' + err);
@@ -57,7 +55,7 @@ router.route('/:id')
         });
     })
 
-    .put((req, res, next) => {
+    .put(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
         Artists.findByIdAndUpdate(req.params.id, {
             $set: req.body
         }, {
@@ -71,7 +69,7 @@ router.route('/:id')
         });
     })
 
-    .delete((req, res, next) => {
+    .delete(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
         Artists.findByIdAndRemove(req.params.id, (err, resp) => {
             if (err) {
                 console.log('err: ' + err);

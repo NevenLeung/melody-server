@@ -5,19 +5,6 @@
 const mongoose = require('mongoose');
 const schema = mongoose.Schema;
 
-const commentSchema = new schema({
-    comment: {
-        type: String,
-        required: true
-    },
-    postedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
-    }
-}, {
-    timestamps: true
-});
-
 const songSchema = new schema({
     title: {
         type: String,
@@ -47,8 +34,7 @@ const songSchema = new schema({
     time: {
         type: String,
         default: ''
-    },
-    comments: [commentSchema]
+    }
 }, {
     timestamps: true
 });
