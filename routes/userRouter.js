@@ -114,7 +114,14 @@ router.route('/:id')
             });
     })
 
-    .put(Verify.verifyOrdinaryUser, Verify.verifyAdmin, (req, res, next) => {
+    .put(Verify.verifyOrdinaryUser, (req, res, next) => {
+        // protect userInfo from malicious modification
+        if (req.decoded._id !== req.params.id) {
+            var error = new Error('You are not authorized to perform this operation!');
+            error.status = 403;
+            return next(error);
+        }
+
         Users.findByIdAndUpdate(req.params.id, {
             $set: req.body
         }, {
@@ -156,8 +163,16 @@ router.route('/:id/favorites')
                 res.json(user);
             });
     })
+
     // set his/her favorite list to empty
     .delete(Verify.verifyOrdinaryUser, (req, res, next) => {
+        // protect userInfo from malicious modification
+        if (req.decoded._id !== req.params.id) {
+            var error = new Error('You are not authorized to perform this operation!');
+            error.status = 403;
+            return next(error);
+        }
+
         Users.findByIdAndUpdate(req.params.id, {
             $set: {
                 favorites: []
@@ -178,6 +193,13 @@ router.route('/:id/favorites')
 // route for updating favorite list in sub document of User model
 router.route('/:id/favorites/:songID')
     .put(Verify.verifyOrdinaryUser, (req, res, next) => {
+        // protect userInfo from malicious modification
+        if (req.decoded._id !== req.params.id) {
+            var error = new Error('You are not authorized to perform this operation!');
+            error.status = 403;
+            return next(error);
+        }
+
         Users.findById(req.params.id)
             .select('_id username avatar introduction favorites updatedAt createdAt')
             .exec((err, user) => {
@@ -213,6 +235,13 @@ router.route('/:id/favorites/:songID')
     })
 
     .delete(Verify.verifyOrdinaryUser, (req, res, next) => {
+        // protect userInfo from malicious modification
+        if (req.decoded._id !== req.params.id) {
+            var error = new Error('You are not authorized to perform this operation!');
+            error.status = 403;
+            return next(error);
+        }
+
         Users.findById(req.params.id)
             .select('_id username avatar introduction favorites updatedAt createdAt')
             .exec((err, user) => {
