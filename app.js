@@ -32,8 +32,16 @@ const userRouter = require('./routes/userRouter');
 let app = express();
 
 // to solve the cross-origin problem
-
 app.use(cors());
+
+// Sceure traffic only
+// app.all('*', function(req, res, next) {
+//     console.log('req start: ', req.hostname, req.url, 'Secure: ' + req.secure, 'Method: ' + req.method);
+//     if (req.secure) {
+//         return next();
+//     }
+//     res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+// });
 
 // use passport to handle user authentication
 app.use(passport.initialize());
