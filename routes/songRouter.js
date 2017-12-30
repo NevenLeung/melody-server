@@ -245,6 +245,9 @@ router.route('/:songID/comments')
                 populate: {
                     path: 'postedBy',
                     select: '_id username avatar'
+                },
+                sort: {
+                    updatedAt: req.query.sort | 1
                 }
             },
             (err, doc) => {
